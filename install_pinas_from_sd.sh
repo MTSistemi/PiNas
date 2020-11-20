@@ -229,7 +229,7 @@ wget -O /tmp/root/root/watch.sh https://raw.githubusercontent.com/MTSistemi/PiNa
 wget https://raw.githubusercontent.com/MTSistemi/PiNas/main/update-pinas -O /tmp/root/usr/local/sbin/update-pinas
 wget https://raw.githubusercontent.com/nachoparker/btrfs-snp/master/btrfs-snp -O /tmp/root/usr/local/sbin/btrfs-snp
 wget https://raw.githubusercontent.com/nachoparker/btrfs-du/master/btrfs-du -O /tmp/root/usr/local/sbin/btrfs-du
-wget -O /tmp/root/root/install_omv5.sh https://cloud.mtsistemi.it/index.php/s/pSp4dPFQ8SaGbne/download
+wget -O /tmp/root/root/install_omv5.sh https://raw.githubusercontent.com/MTSistemi/PiNas/main/install_omv5.sh
 echo
 echo
 echo "Set Scripts Permissions..."
