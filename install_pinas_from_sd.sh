@@ -65,13 +65,16 @@ sleep 5
 mdadm -S /dev/md*
 dd if=/dev/zero of=/dev/sda bs=1M count=1024
 dd if=/dev/zero of=/dev/sdb bs=1M count=1024
+
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$FIRST_DISK"
-  o # new partition
-  w # delete partition 2
+  o # new partition table
+  w # write change
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$SECOND_DISK"
-  o # new partition
-  w # delete partition 2  
+  o # new partition table
+  w # write change 
+
 echo "Now Create Partitions Rootfs And Data On Disks $FIRST_DISK And $SECOND_DISK"
+
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$FIRST_DISK"
   n # new partition
   p # primary partition
@@ -120,7 +123,7 @@ mkfs.fat "$SECOND_BOOT_PARTITION"
 echo 
 echo "The New Partitions Schema Is"
 lsblk
-sleep 10
+sleep 5
 echo
 echo "Is partition $FIRST_BOOT_PARTITION Not Mounted?"
 if df | grep --quiet "$FIRST_BOOT_PARTITION"
