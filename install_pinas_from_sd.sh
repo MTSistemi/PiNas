@@ -69,10 +69,11 @@ dd if=/dev/zero of=/dev/sdb bs=1M count=1024
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$FIRST_DISK"
   o # new partition table
   w # write change
+EOF
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$SECOND_DISK"
   o # new partition table
   w # write change 
-
+EOF
 echo "Now Create Partitions Rootfs And Data On Disks $FIRST_DISK And $SECOND_DISK"
 
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$FIRST_DISK"
@@ -82,7 +83,7 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$FIRST_DISK"
     # default,start immediately after preceding partition (boot)
   +256M  # create a 8GB partition (rootfs)
   t # partition type select
-  9 # partition type vfat
+  c # partition type vfat
   n # new partition
   p # primary partition
   2 # partition number 2
@@ -103,7 +104,7 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$SECOND_DISK"
     # default,start immediately after preceding partition (boot)
   +256M  # create a 8GB partition (rootfs)
   t # partition type select
-  9 # partition type vfat
+  c # partition type vfat
   n # new partition
   p # primary partition
   2 # partition number 2
