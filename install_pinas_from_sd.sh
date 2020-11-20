@@ -15,7 +15,7 @@
 echo "I Need To Update Repository And Install Packages..."
 apt update
 apt-get -qq install mdadm btrfs-tools duperemove rsync 
-
+wget -O /root/watch.sh https://raw.githubusercontent.com/MTSistemi/PiNas/main/watch.sh
 #Set Variable For Disks, Partitions And Arrays
 SD_CARD=/dev/mmcblk0
 SD_BOOT_PARTITION=${SD_CARD}p1
@@ -224,9 +224,9 @@ umount "$BOOT_MOUNTB"
 echo
 echo
 echo "Downloading Scripts are Started..."
-wget -O /tmp/root/root/change_disk.sh https://cloud.mtsistemi.it/index.php/s/EqrPaD5K3RnT7SJ/download
-wget -O /tmp/root/root/watch.sh https://cloud.mtsistemi.it/index.php/s/4iperGxepSs4DCG/download
-wget https://cloud.mtsistemi.it/index.php/s/sRPm7tY5nLm4An2/download -O /tmp/root/usr/local/sbin/update-pinas
+wget -O /tmp/root/root/change_disk.sh https://raw.githubusercontent.com/MTSistemi/PiNas/main/change_disk.sh
+wget -O /tmp/root/root/watch.sh https://raw.githubusercontent.com/MTSistemi/PiNas/main/watch.sh
+wget https://raw.githubusercontent.com/MTSistemi/PiNas/main/update-pinas -O /tmp/root/usr/local/sbin/update-pinas
 wget https://raw.githubusercontent.com/nachoparker/btrfs-snp/master/btrfs-snp -O /tmp/root/usr/local/sbin/btrfs-snp
 wget https://raw.githubusercontent.com/nachoparker/btrfs-du/master/btrfs-du -O /tmp/root/usr/local/sbin/btrfs-du
 wget -O /tmp/root/root/install_omv5.sh https://cloud.mtsistemi.it/index.php/s/pSp4dPFQ8SaGbne/download
@@ -258,6 +258,7 @@ rm -f /tmp/root/etc/mdadm/mdadm.conf
 touch /tmp/root/etc/mdadm/mdadm.conf
 echo "ARRAY   /dev/md0        name=PiNas:0 " >> /tmp/root/etc/mdadm/mdadm.conf
 echo
+./watch.sh
 clear
 echo
 echo 
