@@ -1,0 +1,110 @@
+#!/bin/bash
+# Updater InitRamFs For PiNas
+# Autor: Mattia Tadini
+# File: update-pinas
+# Revision: 1.00 
+
+#Set Variable For Disks, Partitions And Arrays
+
+FIRST_DISK=/dev/sda
+FIRST_BOOT_PARTITION=${FIRST_DISK}1
+FIRST_ROOT_PARTITION=${FIRST_DISK}2
+FIRST_DATA_PARTITION=${FIRST_DISK}3
+SECOND_DISK=/dev/sdb
+SECOND_BOOT_PARTITION=${SECOND_DISK}1
+SECOND_ROOT_PARTITION=${SECOND_DISK}2
+SECOND_DATA_PARTITION=${SECOND_DISK}3
+ARRAY=/dev/md
+# BOOT cannot be RAIDed
+ROOT_ARRAY=${ARRAY}0
+DATA_ARRAY=${ARRAY}1
+
+#Checks
+
+echo "Are We Root?"
+[[ $EUID -eq 0 ]]
+echo "YEAH!"
+echo
+
+echo "Are We Running On The PiNas?"
+[[ "$(uname --machine)" == arm* ]]
+echo "YEAH!"
+echo
+
+echo "Searching For Current Kernel Version..."
+valueold=$(find /lib/modules/ -name "*-v7l+" -print)
+IFS='/'
+oldkernel=$(echo $valueold | awk '{print $3}')
+echo "The Actual Kernel Version Is $oldkernel"
+echo
+echo
+echo "Delete Old Backup Of InitRamFs And Kernel Modules If Present..."
+rm /backup/*.tar.gz -y
+echo
+echo "Make a Backup Of Current Kernel Modules..." 
+echo
+echo "Backup File Is $oldkernel.tar.gz"
+tar -czvf /backup/$(uname -r).tar.gz /lib/modules/$(uname -r)
+echo
+echo "Make A Backup Of Current InitRamFS"
+echo
+echo "Backup File Is initrd7l.img-v7l+.$oldkernel.tar.gz"
+tar -czvf /backup/initrd7l.img-v7l+.$oldkernel.tar.gz /boot/initrd7l.img-v7l+
+echo
+echo
+echo "Start Update..."
+apt update && apt upgrade -y
+echo "Update Completed"
+echo
+echo "Searching For New Kernel Version..."
+value=$(find /lib/modules/ -name "*-v7l+" -print)
+IFS='/'
+newkernel=$(echo $value | awk '{print $3}')
+echo
+echo "The New Kernel Version Is $newkernel"
+echo
+echo "Update The InitRamFs..."
+printf "\nraid1\nmd_mod\nmd\nlinear\nraid0\nraid5\nraid6\nbtrfs\next4\n" >> /etc/initramfs-tools/modules
+update-initramfs -c -k $newkernel
+echo
+sleep3
+mv /boot/initrd.img-$newkernel /boot/initrd7l.img-v7l+
+echo "InitRamFs Is Updated"
+echo
+echo "The New File Is initrd7l.img-v7l+ At Kernel Version $newkernel"
+echo
+
+# The boot partition cannot be RAIDed on an PiNas. We can periodically sync it, and if the primary disk
+# fails, we are then able to just swap the the disks around.
+#
+# assume FIRST_BOOT_PARTITION is already mounted
+
+echo "Is partition $SECOND_BOOT_PARTITION Not Mounted?"
+if df | grep --quiet "$SECOND_BOOT_PARTITION"
+then
+        umount "$SECOND_BOOT_PARTITION"
+fi
+echo "OK"
+
+echo "Start Syncronization..."
+BOOT_MOUNT=/tmp/boot
+mkdir --parents "$BOOT_MOUNT"
+mount "$SECOND_BOOT_PARTITION" "$BOOT_MOUNT"
+rsync --archive --exclude="/lost+found" /boot/ "$BOOT_MOUNT"
+umount "$BOOT_MOUNT"
+echo "Syncronized"
+echo
+echo "The Old Kernel Version Is $oldkernel"
+echo
+echo "The New Kernel Version Is $newkernel"
+echo
+echo "The Backup Directory Is /backup in The RootFs"
+echo
+echo "The Backup Name Of Previous Kernel Modules Is $oldkernel.tar.gz"
+echo 
+echo "The Backup Name Of Previous One InitRamFS Is initrd7l.img-v7l+.$oldkernel.tar.gz"
+echo 
+echo "I Need To Reboot For Apply Change"
+echo
+read -n1 -r -p "Press any key to continue, Ctrl-C to abort..." ignore
+reboot
