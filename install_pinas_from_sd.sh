@@ -159,7 +159,7 @@ rm -f /tmp/bootA/cmdline.txt
 rm -f /tmp/bootB/cmdline.txt 
 rm -f /tmp/bootB/config.txt 
 touch /tmp/bootA/cmdline.txt
-echo "console=serial0,115200 console=tty1 root=/dev/md0 rootfstype=btrfs elevator=deadline fsck.repair=yes boot_delay=20 rootdelay=10 rootwait" >> /tmp/bootA/cmdline.txt
+echo "console=serial0,115200 console=tty1 root=/dev/md0 rootfstype=btrfs elevator=deadline fsck.repair=yes boot_delay=10 rootdelay=5 rootwait" >> /tmp/bootA/cmdline.txt
 printf "\n# Boot from updated initramfs.\ninitramfs initrd7l.img-v7l+ followkernel\n" >> /tmp/bootA/config.txt
 cp /tmp/bootA/cmdline.txt /tmp/bootB/cmdline.txt
 cp /tmp/bootA/config.txt /tmp/bootB/config.txt
