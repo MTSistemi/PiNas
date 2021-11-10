@@ -243,7 +243,7 @@ chmod +x /tmp/root/usr/local/sbin/btrfs-du
 chmod +x /tmp/root/root/*.sh
 echo
 echo 
-echo "Configure Crotab For BTRFS Maintenance"
+echo "Configure Crontab For BTRFS Maintenance"
 cp /tmp/root/etc/crontab /tmp/root/backup/crontab.backup
 touch /tmp/root/etc/crontab 
 echo "
